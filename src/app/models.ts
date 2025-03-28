@@ -7,7 +7,7 @@ export interface Category {
 export interface Theme {
   id: number;
   name: string;
-  categoryId: number; // Ajout du categoryId pour lier un thème à une catégorie
+  categoryId: number;
   cards: Card[];
 }
 
@@ -15,5 +15,14 @@ export interface Card {
   id: number;
   question: string;
   answer: string;
-  themeId: number; // Ajout du themeId pour lier une carte à un thème
+  media: File | null;
+  spacedRepetition: {
+    level: number;
+    nextReviewDate: Date;
+    lastReviewDate?: Date;
+    isNew: boolean;
+    levelGoal: number;
+  };
+  themeId: number;
 }
+

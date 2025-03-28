@@ -6,7 +6,6 @@ import { Category, Theme, Card } from '../models';
   providedIn: 'root',
 })
 export class DataService {
-
   private initialCategories: Category[] = [
     {
       id: 1,
@@ -17,8 +16,32 @@ export class DataService {
           name: 'Algèbre',
           categoryId: 1,
           cards: [
-            { id: 1, question: 'Quelle est la solution de x + 2 = 5 ?', answer: 'x = 3', themeId: 1 },
-            { id: 2, question: 'Développer (a + b)^2.', answer: 'a^2 + 2ab + b^2', themeId: 1 },
+            {
+              id: 1,
+              question: 'Quelle est la solution de x + 2 = 5 ?',
+              answer: 'x = 3',
+              media: null,
+              spacedRepetition: {
+                level: 0,
+                nextReviewDate: new Date(),
+                isNew: true,
+                levelGoal: 5,
+              },
+              themeId: 1,
+            },
+            {
+              id: 2,
+              question: 'Développer (a + b)^2.',
+              answer: 'a² + 2ab + b²',
+              media: null,
+              spacedRepetition: {
+                level: 0,
+                nextReviewDate: new Date(),
+                isNew: true,
+                levelGoal: 6,
+              },
+              themeId: 1,
+            },
           ],
         },
         {
@@ -26,7 +49,19 @@ export class DataService {
           name: 'Géométrie',
           categoryId: 1,
           cards: [
-            { id: 3, question: 'Quelle est la somme des angles d’un triangle ?', answer: '180 degrés', themeId: 2 },
+            {
+              id: 3,
+              question: 'Quelle est la somme des angles d’un triangle ?',
+              answer: '180 degrés',
+              media: null,
+              spacedRepetition: {
+                level: 0,
+                nextReviewDate: new Date(),
+                isNew: true,
+                levelGoal: 4,
+              },
+              themeId: 2,
+            },
           ],
         },
       ],
@@ -40,16 +75,19 @@ export class DataService {
           name: 'Anglais',
           categoryId: 2,
           cards: [
-            { id: 4, question: 'Comment dit-on "chien" en anglais ?', answer: 'Dog', themeId: 3 },
-            { id: 5, question: 'Traduire : "I am learning Angular."', answer: 'J’apprends Angular.', themeId: 3 },
-          ],
-        },
-        {
-          id: 4,
-          name: 'Espagnol',
-          categoryId: 2,
-          cards: [
-            { id: 6, question: 'Traduire : "Bonjour"', answer: 'Hola', themeId: 4 },
+            {
+              id: 4,
+              question: 'Comment dit-on "chien" en anglais ?',
+              answer: 'Dog',
+              media: null,
+              spacedRepetition: {
+                level: 0,
+                nextReviewDate: new Date(),
+                isNew: true,
+                levelGoal: 3,
+              },
+              themeId: 3,
+            },
           ],
         },
       ],
@@ -57,8 +95,67 @@ export class DataService {
   ];
 
   private categories = new BehaviorSubject<Category[]>(this.initialCategories);
-
   categories$ = this.categories.asObservable();
+
+  addCard(card: Card) {
+    const currentCategories = this.categories.value;
+    const category = currentCategories.find(c =>
+      c.themes.some(t => t.id === card.themeId)
+    );
+
+    if (category) {
+      const theme = category.themes.find(t => t.id === card.themeId);
+      if (theme) {
+        theme.cards.push(card);
+        this.categories.next([...currentCategories]);
+      }
+    }
+  }
+
+  deleteCard(id: number) {
+    const currentCategories = this.categories.value;
+    const category = currentCategories.find(c =>
+      c.themes.some(t => t.cards.some(card => card.id === id))
+    );
+
+    if (category) {
+      const theme = category.themes.find(t =>
+        t.cards.some(card => card.id === id)
+      );
+      if (theme) {
+        const cardIndex = theme.cards.findIndex(card => card.id === id);
+        if (cardIndex !== -1) {
+          theme.cards.splice(cardIndex, 1);
+        }
+      }
+      this.categories.next([...currentCategories]);
+    }
+  }
+
+  updateCardRepetition(card: Card, isCorrect: boolean) {
+    if (!card.spacedRepetition) return;
+
+    const today = new Date();
+    card.spacedRepetition.lastReviewDate = today;
+
+    if (isCorrect) {
+      if (card.spacedRepetition.level < card.spacedRepetition.levelGoal) {
+        card.spacedRepetition.level++;
+      }
+      const nextInterval = Math.pow(2, card.spacedRepetition.level); // 2^n jours
+      card.spacedRepetition.nextReviewDate = new Date(
+        today.getTime() + nextInterval * 24 * 60 * 60 * 1000
+      );
+    } else {
+      card.spacedRepetition.level = 0; // Réinitialisation en cas d'erreur
+      card.spacedRepetition.nextReviewDate = new Date(
+        today.getTime() + 24 * 60 * 60 * 1000
+      );
+    }
+
+    card.spacedRepetition.isNew = false;
+    this.categories.next([...this.categories.value]);
+  }
 
   addCategory(category: Category) {
     const current = this.categories.value;
@@ -85,7 +182,6 @@ export class DataService {
     const categoryIndex = currentCategories.findIndex((c) => c.themes.some(t => t.id === id));
 
     if (categoryIndex !== -1) {
-      // Retirer le thème de la catégorie
       const themeIndex = currentCategories[categoryIndex].themes.findIndex(t => t.id === id);
       if (themeIndex !== -1) {
         currentCategories[categoryIndex].themes.splice(themeIndex, 1);
@@ -94,32 +190,22 @@ export class DataService {
     }
   }
 
-  addCard(card: Card) {
-    const currentCategories = this.categories.value;
-    const category = currentCategories.find(c => c.themes.some(t => t.id === card.themeId));
-
-    if (category) {
-      const theme = category.themes.find(t => t.id === card.themeId);
-      if (theme) {
-        theme.cards.push(card);  // Ajout de la carte dans le thème
-        this.categories.next([...currentCategories]);
+  /**
+   * Mettre un thème en révision.
+   * @param theme Le thème à marquer pour révision.
+   */
+  markThemeForReview(theme: Theme) {
+    const today = new Date();
+    for (const card of theme.cards) {
+      if (card.spacedRepetition) {
+        // Marquer toutes les cartes du thème comme prêtes pour révision
+        card.spacedRepetition.nextReviewDate = today;
+        card.spacedRepetition.isNew = false;
       }
     }
-  }
 
-  deleteCard(id: number) {
+    // Mise à jour des catégories pour notifier les abonnés
     const currentCategories = this.categories.value;
-    const category = currentCategories.find(c => c.themes.some(t => t.cards.some(card => card.id === id)));
-
-    if (category) {
-      const theme = category.themes.find(t => t.cards.some(card => card.id === id));
-      if (theme) {
-        const cardIndex = theme.cards.findIndex(card => card.id === id);
-        if (cardIndex !== -1) {
-          theme.cards.splice(cardIndex, 1);
-        }
-      }
-      this.categories.next([...currentCategories]);
-    }
+    this.categories.next([...currentCategories]);
   }
 }
