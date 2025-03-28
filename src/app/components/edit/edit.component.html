@@ -16,11 +16,18 @@
     </button>
   </div>
 
+  
   <!-- Liste des catégories -->
-  <div *ngFor="let category of categories" class="mt-6 p-4 bg-white rounded-lg shadow-md">
-    <h3 class="text-2xl font-semibold text-blue-500">{{ category.name }}</h3>
-    <button (click)="deleteCategory(category.id)" class="text-red-500 mt-2 hover:text-red-700">Supprimer</button>
-
+  <div class="mt-6 p-4 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-blue-500 mb-4">Catégories</h2>
+    <div class="flex space-x-4">
+      <div *ngFor="let category of categories" class="p-4 bg-white rounded-lg shadow-md flex flex-col items-center">
+        <h3 class="text-2xl font-semibold text-blue-500"><button (click)="showCategory(this, category.name)">{{ category.name }}</button></h3>
+        <button (click)="deleteCategory(category.id)" class="text-red-500 mt-2 hover:text-red-700">Supprimer</button>
+      </div>
+    </div>
+  </div>
+    <div *ngFor="let category of categories" class="categories mt-6 p-4 bg-white rounded-lg shadow-md hidden" id="{{ category.name }}">
     <!-- Ajout de thème -->
     <div class="mt-4 p-4 bg-gray-100 rounded-lg shadow-sm">
       <label for="themeName" class="block text-lg font-semibold">Nom du thème :</label>

@@ -100,4 +100,17 @@ export class EditComponent {
       this.dataService.deleteCard(id);
     }
   }
+
+  showCategory(e: EditComponent, name: string) {
+    const allCategories = document.querySelectorAll('.categories');
+    for (const category of Array.from(allCategories)) {
+      category.classList.remove('flex', 'flex-col');
+      category.classList.add('hidden');
+    }
+    const categoryElement = document.getElementById(name);
+    if (categoryElement) {
+      categoryElement.classList.remove('hidden');
+      categoryElement.classList.add('flex', 'flex-col');
+    }
+  }
 }
