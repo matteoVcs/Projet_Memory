@@ -1,10 +1,29 @@
-  <h1 class="text-3xl font-bold text-blue-500">
-    Hello, Tailwind avec Angular! 🚀
-  </h1>
-  <nav>
-    <a routerLink="/home">Home</a>
-    <a routerLink="/edit">Edit</a>
-    <a routerLink="/import">Import</a>
-  </nav>
+<header class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-6 shadow-lg">
+  <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+    <h1 class="text-4xl font-bold">
+      Projet Memory 🚀
+    </h1>
+    <nav class="w-full sm:w-auto flex justify-center sm:justify-start space-x-8 text-lg">
+      <a
+        routerLink="/home"
+        class="py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 transition text-white font-medium"
+      >
+        Home
+      </a>
+      <a
+        routerLink="/edit"
+        class="py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 transition text-white font-medium"
+      >
+        Edit
+      </a>
+      <a
+        routerLink="/import"
+        class="py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 transition text-white font-medium"
+      >
+        Import
+      </a>
+    </nav>
+  </div>
+</header>
 
 <router-outlet></router-outlet>
