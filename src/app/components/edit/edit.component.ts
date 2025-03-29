@@ -3,24 +3,31 @@ import { RouterModule } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { Category, Theme, Card } from '../../models';
 import { FormsModule } from '@angular/forms';
-import {NgForOf, NgIf} from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-edit',
   standalone: true,
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.css'],
-  imports: [RouterModule, FormsModule, NgForOf, NgIf]
+  imports: [RouterModule, FormsModule, NgForOf],
 })
-
 export class EditComponent {
   categories: Category[] = [];
   themes: Theme[] = [];
 
   constructor(private dataService: DataService) {
-    this.dataService.categories$.subscribe((categories) => {
+    this.loadUserCategories();
+  }
+
+  loadUserCategories() {
+    this.dataService.userCategories$.subscribe((categories) => {
       this.categories = categories;
     });
+  }
+
+  saveUserCategories() {
+    this.dataService.saveData(); // Appel à saveData pour sauvegarder dans localStorage
   }
 
   addCategory(categoryName: string) {
@@ -29,8 +36,14 @@ export class EditComponent {
       return;
     }
 
-    const id = Date.now();
-    this.dataService.addCategory({ id, name: categoryName, themes: [] });
+    const newCategory: Category = {
+      id: this.dataService.generateNumericId(), // Utilise la méthode générant des IDs numériques
+      name: categoryName,
+      themes: [],
+    };
+
+    this.dataService.addCategory(newCategory);
+    this.saveUserCategories();
   }
 
   addTheme(themeName: string, categoryId: number) {
@@ -44,60 +57,58 @@ export class EditComponent {
       return;
     }
 
-    const id = Date.now();
-    this.dataService.addTheme({
-      id,
+    const newTheme: Theme = {
+      id: this.dataService.generateNumericId(), // Utilise la méthode générant des IDs numériques
       name: themeName,
       categoryId,
       cards: [],
-    });
+    };
+
+    this.dataService.addTheme(newTheme);
+    this.saveUserCategories();
   }
 
-  addCard(cardQuestion: string, cardAnswer: string, mediaFile: File | null, themeId: number, levelGoal: string) {
-    if (!themeId) {
-      alert("Veuillez sélectionner un thème.");
-      return;
-    }
-
+  addCard(cardQuestion: string, cardAnswer: string, mediaFile: string | null, themeId: number, levelGoal: number) {
     if (!cardQuestion.trim() || !cardAnswer.trim()) {
       alert("La question et la réponse de la carte ne peuvent pas être vides.");
       return;
     }
 
-    const id = Date.now();
-
-    const media = mediaFile || null;
-
-    this.dataService.addCard({
-      id,
+    const newCard: Card = {
+      id: this.dataService.generateNumericId(), // Utilise la méthode générant des IDs numériques
       question: cardQuestion,
       answer: cardAnswer,
-      media: media,
+      media: mediaFile,
       spacedRepetition: {
         level: 0,
-        nextReviewDate: new Date(),
-        isNew: true,
-        levelGoal: Number(levelGoal)
+        nextReviewDate: new Date(Date.now()).toISOString(),
+        levelGoal,
       },
       themeId,
-    });
+    };
+
+    this.dataService.addCard(newCard);
+    this.saveUserCategories();
   }
 
   deleteCategory(id: number) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?")) {
       this.dataService.deleteCategory(id);
+      this.saveUserCategories();
     }
   }
 
   deleteTheme(id: number) {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce thème ?")) {
       this.dataService.deleteTheme(id);
+      this.saveUserCategories();
     }
   }
 
   deleteCard(id: number) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette carte ?")) {
       this.dataService.deleteCard(id);
+      this.saveUserCategories();
     }
   }
 

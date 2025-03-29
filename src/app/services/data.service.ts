@@ -1,211 +1,380 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Category, Theme, Card } from '../models';
+import { User, GeneralDatabase, Category, Theme, Card, SpacedRepetition } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  private initialCategories: Category[] = [
-    {
-      id: 1,
-      name: 'Mathématiques',
-      themes: [
-        {
-          id: 1,
-          name: 'Algèbre',
-          categoryId: 1,
-          cards: [
-            {
-              id: 1,
-              question: 'Quelle est la solution de x + 2 = 5 ?',
-              answer: 'x = 3',
-              media: null,
-              spacedRepetition: {
-                level: 0,
-                nextReviewDate: new Date(),
-                isNew: true,
-                levelGoal: 5,
-              },
-              themeId: 1,
-            },
-            {
-              id: 2,
-              question: 'Développer (a + b)^2.',
-              answer: 'a² + 2ab + b²',
-              media: null,
-              spacedRepetition: {
-                level: 0,
-                nextReviewDate: new Date(),
-                isNew: true,
-                levelGoal: 6,
-              },
-              themeId: 1,
-            },
-          ],
-        },
-        {
-          id: 2,
-          name: 'Géométrie',
-          categoryId: 1,
-          cards: [
-            {
-              id: 3,
-              question: 'Quelle est la somme des angles d’un triangle ?',
-              answer: '180 degrés',
-              media: null,
-              spacedRepetition: {
-                level: 0,
-                nextReviewDate: new Date(),
-                isNew: true,
-                levelGoal: 4,
-              },
-              themeId: 2,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Langues',
-      themes: [
-        {
-          id: 3,
-          name: 'Anglais',
-          categoryId: 2,
-          cards: [
-            {
-              id: 4,
-              question: 'Comment dit-on "chien" en anglais ?',
-              answer: 'Dog',
-              media: null,
-              spacedRepetition: {
-                level: 0,
-                nextReviewDate: new Date(),
-                isNew: true,
-                levelGoal: 3,
-              },
-              themeId: 3,
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  private localStorageUserKey = 'user_categories';
+  private localStorageGeneralKey = 'general_categories';
 
-  private categories = new BehaviorSubject<Category[]>(this.initialCategories);
-  categories$ = this.categories.asObservable();
+  private userData: User = {
+    categories: [],
+  };
+
+  private generalDatabase: GeneralDatabase = {
+    categories: [],
+  };
+
+  private userCategories = new BehaviorSubject<Category[]>(this.userData.categories);
+  userCategories$ = this.userCategories.asObservable();
+
+  private generalCategories = new BehaviorSubject<Category[]>(this.generalDatabase.categories);
+  generalCategories$ = this.generalCategories.asObservable();
+
+  private idCounter = 0;
+
+  constructor() {
+    this.loadData();
+  }
+
+  private loadData() {
+    // Vérifier si les catégories sont présentes et non vides dans localStorage pour l'utilisateur
+    const userCategories = localStorage.getItem(this.localStorageUserKey);
+    if (userCategories) {
+      this.userData.categories = JSON.parse(userCategories);
+      // Vérifier si les catégories utilisateur sont vides
+      if (this.userData.categories.length === 0) {
+        this.initializeDefaultUserCategories();  // Initialiser avec des données par défaut si vide
+      } else {
+        this.userCategories.next([...this.userData.categories]);
+      }
+    } else {
+      this.initializeDefaultUserCategories();  // Initialiser avec des données par défaut si localStorage est vide
+    }
+
+    // Vérifier si les catégories sont présentes et non vides dans localStorage pour les catégories générales
+    const generalCategories = localStorage.getItem(this.localStorageGeneralKey);
+    if (generalCategories) {
+      this.generalDatabase.categories = JSON.parse(generalCategories);
+      // Vérifier si les catégories générales sont vides
+      if (this.generalDatabase.categories.length === 0) {
+        this.initializeDefaultGeneralCategories();  // Initialiser avec des données par défaut si vide
+      } else {
+        this.generalCategories.next([...this.generalDatabase.categories]);
+      }
+    } else {
+      this.initializeDefaultGeneralCategories();  // Initialiser avec des données par défaut si localStorage est vide
+    }
+  }
+
+  private initializeDefaultUserCategories() {
+    // Données de test réalistes pour les catégories utilisateur
+    this.userData.categories = [
+      {
+        id: this.generateNumericId(),
+        name: 'Mathematics',
+        themes: [
+          {
+            id: this.generateNumericId(),
+            name: 'Algebra',
+            categoryId: 0,  // L'id de la catégorie parent
+            cards: [
+              {
+                id: this.generateNumericId(),
+                question: 'What is the quadratic formula?',
+                answer: 'x = (-b ± √(b²-4ac)) / 2a',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+              {
+                id: this.generateNumericId(),
+                question: 'Simplify x^2 + 5x + 6.',
+                answer: '(x + 2)(x + 3)',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+            ],
+          },
+          {
+            id: this.generateNumericId(),
+            name: 'Geometry',
+            categoryId: 0,
+            cards: [
+              {
+                id: this.generateNumericId(),
+                question: 'What is the Pythagorean Theorem?',
+                answer: 'a² + b² = c²',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 1,
+              },
+              {
+                id: this.generateNumericId(),
+                question: 'What is the area of a circle?',
+                answer: 'πr²',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 1,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: this.generateNumericId(),
+        name: 'Physics',
+        themes: [
+          {
+            id: this.generateNumericId(),
+            name: 'Mechanics',
+            categoryId: 1,
+            cards: [
+              {
+                id: this.generateNumericId(),
+                question: 'What is Newton\'s Second Law of Motion?',
+                answer: 'F = ma',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+              {
+                id: this.generateNumericId(),
+                question: 'What is the formula for kinetic energy?',
+                answer: 'KE = 1/2 mv²',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    this.userCategories.next([...this.userData.categories]);
+    this.saveData();
+  }
+
+  private initializeDefaultGeneralCategories() {
+    this.generalDatabase.categories = [
+      {
+        id: this.generateNumericId(),
+        name: 'General Knowledge',
+        themes: [
+          {
+            id: this.generateNumericId(),
+            name: 'Geography',
+            categoryId: 0,  // L'id de la catégorie parent
+            cards: [
+              {
+                id: this.generateNumericId(),
+                question: 'What is the capital of France?',
+                answer: 'Paris',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+              {
+                id: this.generateNumericId(),
+                question: 'Which continent is Egypt located on?',
+                answer: 'Africa',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+            ],
+          },
+          {
+            id: this.generateNumericId(),
+            name: 'History',
+            categoryId: 0,
+            cards: [
+              {
+                id: this.generateNumericId(),
+                question: 'Who was the first president of the United States?',
+                answer: 'George Washington',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 1,
+              },
+              {
+                id: this.generateNumericId(),
+                question: 'In which year did World War II end?',
+                answer: '1945',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 1,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: this.generateNumericId(),
+        name: 'Literature',
+        themes: [
+          {
+            id: this.generateNumericId(),
+            name: 'Shakespeare',
+            categoryId: 2,
+            cards: [
+              {
+                id: this.generateNumericId(),
+                question: 'What is the title of Shakespeare\'s play about two star-crossed lovers?',
+                answer: 'Romeo and Juliet',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+              {
+                id: this.generateNumericId(),
+                question: 'Which play features the character Hamlet?',
+                answer: 'Hamlet',
+                media: null,
+                spacedRepetition: {
+                  level: 0,
+                  nextReviewDate: new Date().toISOString(),
+                  levelGoal: 5,
+                },
+                themeId: 0,
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    this.generalCategories.next([...this.generalDatabase.categories]);
+    this.saveData();
+  }
+
+  saveData() {
+    localStorage.setItem(this.localStorageUserKey, JSON.stringify(this.userData.categories));
+    localStorage.setItem(this.localStorageGeneralKey, JSON.stringify(this.generalDatabase.categories));
+  }
+
+  generateNumericId(): number {
+    return Date.now() + this.idCounter++;
+  }
 
   addCard(card: Card) {
-    const currentCategories = this.categories.value;
-    const category = currentCategories.find(c =>
-      c.themes.some(t => t.id === card.themeId)
-    );
-
-    if (category) {
-      const theme = category.themes.find(t => t.id === card.themeId);
-      if (theme) {
-        theme.cards.push(card);
-        this.categories.next([...currentCategories]);
-      }
+    card.id = card.id || this.generateNumericId();
+    const theme = this.userData.categories.flatMap(c => c.themes).find(t => t.id === card.themeId);
+    if (theme) {
+      theme.cards.push(card);
+      this.userCategories.next([...this.userData.categories]);
+      this.saveData();
     }
   }
 
   deleteCard(id: number) {
-    const currentCategories = this.categories.value;
-    const category = currentCategories.find(c =>
-      c.themes.some(t => t.cards.some(card => card.id === id))
-    );
-
-    if (category) {
-      const theme = category.themes.find(t =>
-        t.cards.some(card => card.id === id)
-      );
-      if (theme) {
-        const cardIndex = theme.cards.findIndex(card => card.id === id);
-        if (cardIndex !== -1) {
-          theme.cards.splice(cardIndex, 1);
-        }
-      }
-      this.categories.next([...currentCategories]);
-    }
+    this.userData.categories.forEach(category => {
+      category.themes.forEach(theme => {
+        theme.cards = theme.cards.filter(card => card.id !== id);
+      });
+    });
+    this.userCategories.next([...this.userData.categories]);
+    this.saveData();
   }
 
   updateCardRepetition(card: Card, isCorrect: boolean) {
     if (!card.spacedRepetition) return;
 
-    const today = new Date();
-    card.spacedRepetition.lastReviewDate = today;
-
     if (isCorrect) {
       if (card.spacedRepetition.level < card.spacedRepetition.levelGoal) {
         card.spacedRepetition.level++;
       }
-      const nextInterval = Math.pow(2, card.spacedRepetition.level); // 2^n jours
-      card.spacedRepetition.nextReviewDate = new Date(
-        today.getTime() + nextInterval * 24 * 60 * 60 * 1000
-      );
+      const nextInterval = Math.pow(2, card.spacedRepetition.level);
+      card.spacedRepetition.nextReviewDate = new Date(Date.now() + nextInterval * 24 * 60 * 60 * 1000).toISOString();
     } else {
-      card.spacedRepetition.level = 0; // Réinitialisation en cas d'erreur
-      card.spacedRepetition.nextReviewDate = new Date(
-        today.getTime() + 24 * 60 * 60 * 1000
-      );
+      card.spacedRepetition.level = 0;
+      card.spacedRepetition.nextReviewDate = new Date(Date.now()).toISOString();
     }
-
-    card.spacedRepetition.isNew = false;
-    this.categories.next([...this.categories.value]);
+    this.userCategories.next([...this.userData.categories]);
+    this.saveData();
   }
 
-  addCategory(category: Category) {
-    const current = this.categories.value;
-    this.categories.next([...current, category]);
+  addCategory(category: Category, isGeneral: boolean = false) {
+    category.id = category.id || this.generateNumericId();
+    if (isGeneral) {
+      this.generalDatabase.categories.push(category);
+      this.generalCategories.next([...this.generalDatabase.categories]);
+    } else {
+      this.userData.categories.push(category);
+      this.userCategories.next([...this.userData.categories]);
+    }
+    this.saveData();
   }
 
   deleteCategory(id: number) {
-    const current = this.categories.value.filter((c) => c.id !== id);
-    this.categories.next(current);
+    this.userData.categories = this.userData.categories.filter(c => c.id !== id);
+    this.userCategories.next([...this.userData.categories]);
+    this.saveData();
   }
 
   addTheme(theme: Theme) {
-    const currentCategories = this.categories.value;
-    const categoryIndex = currentCategories.findIndex((c) => c.id === theme.categoryId);
-
-    if (categoryIndex !== -1) {
-      currentCategories[categoryIndex].themes.push(theme);
-      this.categories.next([...currentCategories]);
+    theme.id = theme.id || this.generateNumericId();
+    const category = this.userData.categories.find(c => c.id === theme.categoryId);
+    if (category) {
+      category.themes.push(theme);
+      this.userCategories.next([...this.userData.categories]);
+      this.saveData();
     }
   }
 
   deleteTheme(id: number) {
-    const currentCategories = this.categories.value;
-    const categoryIndex = currentCategories.findIndex((c) => c.themes.some(t => t.id === id));
-
-    if (categoryIndex !== -1) {
-      const themeIndex = currentCategories[categoryIndex].themes.findIndex(t => t.id === id);
-      if (themeIndex !== -1) {
-        currentCategories[categoryIndex].themes.splice(themeIndex, 1);
-      }
-      this.categories.next([...currentCategories]);
-    }
+    this.userData.categories.forEach(category => {
+      category.themes = category.themes.filter(t => t.id !== id);
+    });
+    this.userCategories.next([...this.userData.categories]);
+    this.saveData();
   }
 
-  /**
-   * Mettre un thème en révision.
-   * @param theme Le thème à marquer pour révision.
-   */
-  markThemeForReview(theme: Theme) {
-    const today = new Date();
-    for (const card of theme.cards) {
-      if (card.spacedRepetition) {
-        // Marquer toutes les cartes du thème comme prêtes pour révision
-        card.spacedRepetition.nextReviewDate = today;
-        card.spacedRepetition.isNew = false;
+  importThemeFromGeneral(themeId: number, categoryId: number) {
+    const theme = this.generalDatabase.categories.flatMap(c => c.themes).find(t => t.id === themeId);
+    if (theme) {
+      const category = this.userData.categories.find(c => c.id === categoryId);
+      if (category) {
+        category.themes.push({ ...theme, cards: [...theme.cards] });
+        this.userCategories.next([...this.userData.categories]);
+        this.saveData();
       }
     }
-
-    // Mise à jour des catégories pour notifier les abonnés
-    const currentCategories = this.categories.value;
-    this.categories.next([...currentCategories]);
   }
 }

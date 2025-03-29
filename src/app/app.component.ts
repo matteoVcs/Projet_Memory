@@ -7,9 +7,9 @@ import {RouterLink, RouterOutlet} from '@angular/router';
   templateUrl: './app.component.html',
   imports: [
     RouterOutlet,
-    RouterLink
+    RouterLink,
   ],
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'Application Memory';

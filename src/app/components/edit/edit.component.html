@@ -85,7 +85,7 @@
           placeholder="Entrez l'objectif du niveau"
         />
 
-        <button (click)="addCard(cardQuestionInput.value, cardAnswerInput.value, mediaFileInput?.files?.[0] ?? null, theme.id, levelGoalInput.value)" class="mt-3 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+        <button (click)="addCard(cardQuestionInput.value, cardAnswerInput.value, null, theme.id, levelGoalInput.valueAsNumber)" class="mt-3 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
           Ajouter une carte
         </button>
       </div>
@@ -94,26 +94,6 @@
         <li *ngFor="let card of theme.cards" class="p-4 bg-white rounded-lg shadow-sm">
           <strong class="text-lg text-indigo-700">{{ card.question }}:</strong>
           <p class="text-gray-700">{{ card.answer }}</p>
-
-          <div *ngIf="card.media">
-            <div *ngIf="card.media.type.startsWith('image')">
-              <img [src]="card.media" alt="Image du média" class="w-full h-auto" />
-            </div>
-
-            <div *ngIf="card.media.type.startsWith('audio')">
-              <audio controls>
-                <source [src]="card.media" type="audio/mp3">
-                Votre navigateur ne prend pas en charge l'élément audio.
-              </audio>
-            </div>
-
-            <div *ngIf="card.media.type.startsWith('video')">
-              <video controls>
-                <source [src]="card.media" type="video/mp4">
-                Votre navigateur ne prend pas en charge la lecture vidéo.
-              </video>
-            </div>
-          </div>
 
           <button (click)="deleteCard(card.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
             Supprimer

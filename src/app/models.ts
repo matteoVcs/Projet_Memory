@@ -1,3 +1,11 @@
+export interface User {
+  categories: Category[];
+}
+
+export interface GeneralDatabase {
+  categories: Category[];
+}
+
 export interface Category {
   id: number;
   name: string;
@@ -15,14 +23,13 @@ export interface Card {
   id: number;
   question: string;
   answer: string;
-  media: File | null;
-  spacedRepetition: {
-    level: number;
-    nextReviewDate: Date;
-    lastReviewDate?: Date;
-    isNew: boolean;
-    levelGoal: number;
-  };
+  media: string | null;
+  spacedRepetition: SpacedRepetition;
   themeId: number;
 }
 
+export interface SpacedRepetition {
+  level: number;
+  nextReviewDate: string;
+  levelGoal: number;
+}

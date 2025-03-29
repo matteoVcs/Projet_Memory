@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit {
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.dataService.categories$.subscribe((categories) => {
+    this.dataService.userCategories$.subscribe((categories) => {
       this.categories = categories;
     });
   }
@@ -54,9 +54,12 @@ export class HomeComponent implements OnInit {
   }
 
   finishReview() {
-    if (this.themeNeedsReview && this.currentTheme) {
-      // Si le thème nécessite une révision, mettre à jour son état
-      this.dataService.markThemeForReview(this.currentTheme);
+    if (this.currentTheme) {
+      if (!this.currentTheme.cards || this.currentTheme.cards.length === 0) return;
+
+      this.currentTheme.cards.forEach((card, index) => {
+        this.dataService.updateCardRepetition(card, !this.themeNeedsReview);
+      });
     }
     this.stopReview();
   }
@@ -77,8 +80,6 @@ export class HomeComponent implements OnInit {
 
     if (!this.isCorrect) {
       this.themeNeedsReview = true; // Marquer le thème comme à réviser si une erreur
-    } else {
-      this.dataService.updateCardRepetition(this.currentCard, this.isCorrect);
     }
   }
 
@@ -123,7 +124,7 @@ export class HomeComponent implements OnInit {
       const themesToReviewLater = category.themes.filter(theme => {
         const cardsToReviewLater = theme.cards.filter(card => {
           const nextReviewDate = new Date(card.spacedRepetition.nextReviewDate);
-          return nextReviewDate.getTime() > today.getTime();
+          return nextReviewDate.getTime() > today.getTime() && card.spacedRepetition.level < card.spacedRepetition.levelGoal;
         });
 
         return cardsToReviewLater.length > 0;
