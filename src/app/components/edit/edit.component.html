@@ -1,7 +1,6 @@
 <div class="p-6 space-y-6 bg-gray-50 rounded-lg shadow-lg">
-  <h1 class="text-3xl font-bold text-blue-600">Gestion des Catégories, Thèmes et Cartes</h1>
+  <h1 class="text-3xl font-bold text-blue-600 text-center md:text-left">Gestion des Catégories, Thèmes et Cartes</h1>
 
-  <!-- Ajout de catégorie -->
   <div class="p-4 bg-white rounded-lg shadow-md">
     <label for="categoryName" class="block text-lg font-semibold">Nom de la catégorie :</label>
     <input
@@ -11,24 +10,26 @@
       class="mt-2 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
       placeholder="Entrez un nom de catégorie"
     />
-    <button (click)="addCategory(categoryNameInput.value)" class="mt-3 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-all duration-300 ease-in-out transform hover:scale-105">
+    <button (click)="addCategory(categoryNameInput.value)" class="mt-3 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
       Ajouter une catégorie
     </button>
   </div>
 
-  
-  <!-- Liste des catégories -->
   <div class="mt-6 p-4 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold text-blue-500 mb-4">Catégories</h2>
-    <div class="flex space-x-4 ">
-      <div *ngFor="let category of categories" class="p-4 bg-white rounded-lg shadow-md flex flex-col items-center transition-all duration-300 ease-in-out transform hover:scale-105 category-button">
-        <h3 class="text-2xl font-semibold text-blue-500 pb-2 "><button (click)="showCategory($event.target!, category.name)">{{ category.name }}</button></h3>
-        <button (click)="deleteCategory(category.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">Supprimer</button>
+    <h2 class="text-2xl font-semibold text-blue-500 mb-4 text-center md:text-left">Catégories</h2>
+    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+      <div *ngFor="let category of categories" class="p-4 bg-white rounded-lg shadow-md flex flex-col items-center transition-all duration-300 ease-in-out transform hover:scale-105 category-button w-full sm:w-auto">
+        <h3 class="text-2xl font-semibold text-blue-500 pb-2">
+          <button (click)="showCategory($event.target!, category.name)">{{ category.name }}</button>
+        </h3>
+        <button (click)="deleteCategory(category.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+          Supprimer
+        </button>
       </div>
     </div>
   </div>
-    <div *ngFor="let category of categories" class="categories mt-6 p-4 bg-white rounded-lg shadow-md hidden" id="{{ category.name }}">
-    <!-- Ajout de thème -->
+
+  <div *ngFor="let category of categories" class="categories mt-6 p-4 bg-white rounded-lg shadow-md hidden" id="{{ category.name }}">
     <div class="mt-4 p-4 bg-gray-100 rounded-lg shadow-sm">
       <label for="themeName" class="block text-lg font-semibold">Nom du thème :</label>
       <input
@@ -38,17 +39,17 @@
         class="mt-2 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Entrez un nom de thème"
       />
-      <button (click)="addTheme(themeNameInput.value, category.id)" class="mt-3 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105">
+      <button (click)="addTheme(themeNameInput.value, category.id)" class="mt-3 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
         Ajouter un thème
       </button>
     </div>
 
-    <!-- Liste des thèmes -->
     <div *ngFor="let theme of category.themes" class="mt-6 p-4 bg-gray-200 rounded-lg shadow-md">
       <h4 class="text-xl font-medium text-indigo-600">{{ theme.name }}</h4>
-      <button (click)="deleteTheme(theme.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">Supprimer</button>
+      <button (click)="deleteTheme(theme.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+        Supprimer
+      </button>
 
-      <!-- Ajout de carte -->
       <div class="mt-4 p-4 bg-white rounded-lg shadow-sm">
         <label for="cardQuestion" class="block text-lg font-semibold">Question de la carte :</label>
         <input
@@ -67,8 +68,6 @@
           placeholder="Entrez une réponse"
         />
 
-        <!-- Ajout de média -->
-        <!-- Sélection du fichier multimédia -->
         <label for="mediaFile" class="block text-lg font-semibold mt-3">Fichier du média :</label>
         <input
           id="mediaFile"
@@ -77,7 +76,6 @@
           class="mt-2 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        <!-- Objectif du niveau de répétition -->
         <label for="levelGoal" class="block text-lg font-semibold mt-3">Objectif du niveau de répétition :</label>
         <input
           id="levelGoal"
@@ -87,19 +85,17 @@
           placeholder="Entrez l'objectif du niveau"
         />
 
-        <button (click)="addCard(cardQuestionInput.value, cardAnswerInput.value, mediaFileInput?.files?.[0] ?? null, theme.id, levelGoalInput.value)" class="mt-3 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-all duration-300 ease-in-out transform hover:scale-105">
+        <button (click)="addCard(cardQuestionInput.value, cardAnswerInput.value, mediaFileInput?.files?.[0] ?? null, theme.id, levelGoalInput.value)" class="mt-3 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
           Ajouter une carte
         </button>
       </div>
 
-      <!-- Liste des cartes -->
       <ul class="mt-6 space-y-3">
         <li *ngFor="let card of theme.cards" class="p-4 bg-white rounded-lg shadow-sm">
           <strong class="text-lg text-indigo-700">{{ card.question }}:</strong>
           <p class="text-gray-700">{{ card.answer }}</p>
 
           <div *ngIf="card.media">
-            <!-- Affichage du média -->
             <div *ngIf="card.media.type.startsWith('image')">
               <img [src]="card.media" alt="Image du média" class="w-full h-auto" />
             </div>
@@ -119,11 +115,11 @@
             </div>
           </div>
 
-          <button (click)="deleteCard(card.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">Supprimer</button>
+          <button (click)="deleteCard(card.id)" class="text-white bg-red-500 hover:bg-red-600 border border-red-700 rounded-lg py-1 px-2 shadow-md transition-all duration-300 ease-in-out transform hover:scale-105">
+            Supprimer
+          </button>
         </li>
       </ul>
-
-
     </div>
   </div>
 </div>

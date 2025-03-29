@@ -107,16 +107,10 @@ export class EditComponent {
       category.classList.remove('flex', 'flex-col');
       category.classList.add('hidden');
     }
-    /*<div *ngFor="let category of categories" class="p-4 bg-white rounded-lg shadow-md flex flex-col items-center category-button">
-        <h3 class="text-2xl font-semibold text-blue-500"><button (click)="showCategory($event.target!, category.name)">{{ category.name }}</button></h3>
-        <button (click)="deleteCategory(category.id)" class="text-red-500 mt-2 hover:text-red-700">Supprimer</button>
-      </div>
-    */
     const allButtons = document.querySelectorAll('.category-button');
     for (const button of Array.from(allButtons)) {
       button.classList.remove('bg-blue-500');
       button.classList.add('bg-white');
-      //get button child element
       let buttonChild = button.querySelector('button') as HTMLButtonElement;
       buttonChild.classList.remove('text-white');
       buttonChild.classList.add('text-blue');
