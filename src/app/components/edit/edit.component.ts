@@ -101,12 +101,36 @@ export class EditComponent {
     }
   }
 
-  showCategory(e: EditComponent, name: string) {
+  showCategory(e: EventTarget, name: string) {
     const allCategories = document.querySelectorAll('.categories');
     for (const category of Array.from(allCategories)) {
       category.classList.remove('flex', 'flex-col');
       category.classList.add('hidden');
     }
+    /*<div *ngFor="let category of categories" class="p-4 bg-white rounded-lg shadow-md flex flex-col items-center category-button">
+        <h3 class="text-2xl font-semibold text-blue-500"><button (click)="showCategory($event.target!, category.name)">{{ category.name }}</button></h3>
+        <button (click)="deleteCategory(category.id)" class="text-red-500 mt-2 hover:text-red-700">Supprimer</button>
+      </div>
+    */
+    const allButtons = document.querySelectorAll('.category-button');
+    for (const button of Array.from(allButtons)) {
+      button.classList.remove('bg-blue-500');
+      button.classList.add('bg-white');
+      //get button child element
+      let buttonChild = button.querySelector('button') as HTMLButtonElement;
+      buttonChild.classList.remove('text-white');
+      buttonChild.classList.add('text-blue');
+      console.log(button);
+    }
+
+    let button = e as HTMLButtonElement;
+    let buttonDiv = button.parentElement?.parentElement as HTMLButtonElement;
+    buttonDiv.classList.remove('bg-white');
+    buttonDiv.classList.add('bg-blue-500');
+    button.classList.remove('text-blue');
+    button.classList.add('text-white');
+    console.log(button);
+
     const categoryElement = document.getElementById(name);
     if (categoryElement) {
       categoryElement.classList.remove('hidden');
