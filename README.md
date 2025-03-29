@@ -64,7 +64,6 @@ Pour lancer le projet, suivez les étapes ci-dessous :
   - Création, édition et suppression des catégories, thèmes et cartes.
   - Fonctionnement hors-ligne avec Service Worker et fichier MANIFEST.
   - Organisation et structuration du code.
-  - Intégration de VueJS 3, Pinia et vue-router.
 
 - **Mattéo Vocanson** :
   - Implémentation de la révision avec répétition espacée.
